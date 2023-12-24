@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samplebank
+  namespace: samplebank
+spec:
+  selector:
+    matchLabels:
+      app: samplebank
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: samplebank
+    spec:
+      containers:
+      - name: samplebank
+        image: sercanyz/samplebank:latest
+        ports:
+        - containerPort: 5000
+
+---
+  
+apiVersion: v1
+kind: Service
+metadata:
+  name: samplebank
+  namespace: samplebank
+spec:
+  type: LoadBalancer
+  selector:
+    app: samplebank
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: samplebank
+  namespace: samplebank
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: "samplebank.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: samplebank
+            port:
+              number: 5000

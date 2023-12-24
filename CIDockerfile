@@ -1,0 +1,7 @@
+FROM muhgumus/serve
+WORKDIR /app
+COPY build/ ./build
+COPY env.sh .
+COPY .env .
+CMD chmod +x ./env.sh; sync; ./env.sh; sync; serve -l 80 -s build 
+EXPOSE 80
